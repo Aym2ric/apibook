@@ -45,6 +45,70 @@ class Realisation
     /**
      * @return mixed
      */
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    /**
+     * @param mixed $id
+     */
+    public function setId($id): void
+    {
+        $this->id = $id;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getTitre()
+    {
+        return $this->titre;
+    }
+
+    /**
+     * @param mixed $titre
+     */
+    public function setTitre($titre): void
+    {
+        $this->titre = $titre;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getDescription()
+    {
+        return $this->description;
+    }
+
+    /**
+     * @param mixed $description
+     */
+    public function setDescription($description): void
+    {
+        $this->description = $description;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getUrl()
+    {
+        return $this->url;
+    }
+
+    /**
+     * @param mixed $url
+     */
+    public function setUrl($url): void
+    {
+        $this->url = $url;
+    }
+
+    /**
+     * @return mixed
+     */
     public function getImageCropping()
     {
         return $this->imageCropping;
@@ -58,44 +122,4 @@ class Realisation
         $this->imageCropping = $imageCropping;
     }
 
-    public function getId(): ?int
-    {
-        return $this->id;
-    }
-
-    public function getTitre(): ?string
-    {
-        return $this->titre;
-    }
-
-    public function setTitre(string $Titre): self
-    {
-        $this->titre = $Titre;
-
-        return $this;
-    }
-
-    public function getDescription(): ?string
-    {
-        return $this->description;
-    }
-
-    public function setDescription(string $description): self
-    {
-        $this->description = $description;
-
-        return $this;
-    }
-
-    public function getUrl(): ?string
-    {
-        return $this->url;
-    }
-
-    public function setUrl(string $url): self
-    {
-        $this->url = $url;
-
-        return $this;
-    }
 }

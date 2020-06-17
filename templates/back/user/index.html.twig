@@ -103,7 +103,14 @@
                     <th>{{ knp_pagination_sortable(pagination, 'Username', 'q.username') }}</th>
                     <th>{{ knp_pagination_sortable(pagination, 'Rôles', 'q.roles') }}</th>
                     <th>{{ knp_pagination_sortable(pagination, 'Activé', 'q.enabled') }}</th>
-                    <th>Actions</th>
+                    <th class="text-center">Actions</th>
+                    <th class="text-center">
+                        <button type="button" id="initButton" class="btn btn-danger btn-md" data-toggle="modal"
+                                data-target="#deleteModal">
+                            <i class="fa fa-trash"></i>
+                            <span class="font-weight-normal">Supprimer</span>
+                        </button>
+                    </th>
                 </tr>
                 </thead>
                 <tbody>
@@ -118,25 +125,21 @@
                                 <i class="badge badge-danger">Non</i>
                             {% endif %}
                         </td>
-                        <td>
+                        <td class="text-center">
                             <div class="btn-group" role="group" aria-label="Basic example">
                                 <a href="{{ path('user_edit', {'id': user.id}) }}" class="btn btn-grey btn-md"><i
                                             class="fa fa-pencil"></i> <span
                                             class="font-weight-normal">Modifier</span></a>
-
-                                <button class="btn btn-danger btn-md open-modal-delete" data-toggle="modal"
-                                        data-target="#modal-delete" data-id="{{ user.id }}"
-                                        data-user="{{ user.username }}">
-                                    <i class="fa fa-trash"></i>
-                                    <span class="font-weight-normal">Supprimer</span>
-                                </button>
-
                             </div>
+                        </td>
+                        <td class="text-center">
+                            <input type="checkbox" name="users-to-delete" data-value="{{ user.username }}"
+                                   value="{{ user.id }}"/>
                         </td>
                     </tr>
                 {% else %}
                     <tr>
-                        <td colspan="4">
+                        <td colspan="999">
                             <div class="alert alert-danger">Aucun résultat trouvé</div>
                         </td>
                     </tr>
@@ -158,48 +161,82 @@
     </div>
     <!-- PAGINATOR BOT -->
 
-    <div id="modal-delete" class="modal" data-backdrop="true" style="display: none;" aria-hidden="true">
-        <div class="modal-dialog">
+    <!-- MODAL DELETE -->
+    <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog" role="document">
             <div class="modal-content">
-                <div class="modal-header"><h5 class="modal-title">Modal</h5></div>
-                <div class="modal-body text-center p-lg">
-                    <p>Êtes-vous sûr de vouloir supprimer l'utilisateur <span id="modal-username-delete"></span> ?</p>
+                <div class="modal-header">
+                    <h5 class="modal-title" id="deleteModalLabel">Suppression d'utilisateur(s)</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p>Êtes-vous sûr de vouloir supprimer les utilisateur(s) suivant(s) ?</p>
+                    <ul id="ul-show-users"></ul>
+                    <div id="loader-css" class="text-center"></div>
+                    <div id="ajax-response" class="text-center"></div>
                 </div>
                 <div class="modal-footer">
-                    <button id="delete-modal-delete" class="btn btn-success-light">Confirmer</button>
-                    <button type="button" class="btn danger p-x-md" data-dismiss="modal">Fermer</button>
+                    <button type="button" class="btn btn-danger" data-dismiss="modal">Annuler</button>
+                    <button id="deleteButton" type="button" class="btn btn-success text-white">Supprimer</button>
                 </div>
             </div>
         </div>
     </div>
+    <!-- MODAL DELETE -->
 {% endblock %}
 
 {% block javascript %}
     <script type="text/javascript">
         /* JQUERY DELETE */
-        var userId = null;
-        $(".open-modal-delete").on("click", function () {
-            userId = null;
-            $("#modal-username-delete").text($(this).attr("data-user"));
-            userId = $(this).attr("data-id");
+        let tab_users_id = [];
+
+        $("#initButton").on("click", function () {
+            tab_users_id = [];
+            let tab_users_name = [];
+            $("#ul-show-users").html("");
+            $("#loader-css").html("");
+            $("#ajax-response").html("");
+
+            $('input[name="users-to-delete"]:checkbox:checked').each(function () {
+                tab_users_id.push($(this).val());
+                tab_users_name.push($(this).attr("data-value"));
+            });
+
+            tab_users_name.forEach(function (name) {
+                $("#ul-show-users").append('<li>' + name + '</li>');
+            });
+
         });
 
-        $("#delete-modal-delete").on("click", function () {
+        $("#deleteButton").on("click", function () {
+
+            $("#ajax-response").html("");
+
             $.ajax({
                 url: "{{ path('user_delete_ajax') }}",
                 type: "POST",
                 dataType: "json",
                 data: {
-                    "userId": userId
+                    "tab_users_id": tab_users_id
                 },
                 async: true,
+                beforeSend: function () {
+                    $("#loader-css").append("<img src='{{ asset('images/loading.gif') }}'/>");
+                },
+                complete: function () {
+                    $("#loader-css").html("");
+                },
                 success: function (data) {
-                    userId = null;
-                    $("#modal-delete").modal('hide');
+                    $("#ajax-response").append("<img src='{{ asset('images/check-circle.gif') }}'/>");
                     location.reload();
+                },
+                error: function () {
+                    $("#ajax-response").append("<div class='text-danger'>Une erreur est survenue.</div>");
                 }
             });
-            userId = null;
         });
         /* JQUERY DELETE */
     </script>

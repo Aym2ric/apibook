@@ -100,9 +100,10 @@ class UserController extends AbstractController
      * @param Request $request
      * @param UserPasswordEncoderInterface $passwordEncoder
      * @param Breadcrumbs $breadcrumbs
+     * @param UserRepository $repository
      * @return Response
      */
-    public function new(Request $request, UserPasswordEncoderInterface $passwordEncoder, Breadcrumbs $breadcrumbs): Response
+    public function new(Request $request, UserPasswordEncoderInterface $passwordEncoder, Breadcrumbs $breadcrumbs, UserRepository $repository): Response
     {
         $breadcrumbs->addItem("Administration", $this->generateUrl('admin_index'));
         $breadcrumbs->addItem("Utilisateurs", $this->generateUrl('user_index'));
@@ -115,6 +116,17 @@ class UserController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+
+            // On vérifie que l'utilisateur n'existe pas
+            $existeUser = $repository->findOneBy(['username' => $user->getUsername()]);
+            if($existeUser) {
+                $this->addFlash("danger","L'username est déjà utilisé pour un autre utilisateur");
+                return $this->render('back/user/new.html.twig', [
+                    'user' => $user,
+                    'form' => $form->createView(),
+                ]);
+            }
+
             $entityManager = $this->getDoctrine()->getManager();
             $password = $passwordEncoder->encodePassword($user, $user->getPassword());
             $user->setPassword($password);
@@ -185,9 +197,12 @@ class UserController extends AbstractController
     public function delete_ajax(Request $request): Response
     {
         $entityManager = $this->getDoctrine()->getManager();
-        $user = $entityManager->getRepository(User::class)->findOneBy(["id"=> $request->request->get("userId")]);
-        $entityManager->remove($user);
-        $entityManager->flush();
+
+        foreach ($request->request->get("tab_users_id") as $id_user) {
+            $user = $entityManager->getRepository(User::class)->findOneBy(["id" => $id_user]);
+            $entityManager->remove($user);
+            $entityManager->flush();
+        }
 
         $this->addFlash("success","Utilisateur supprimé");
 

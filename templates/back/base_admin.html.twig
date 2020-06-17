@@ -9,12 +9,31 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-barstyle" content="black-translucent">
-    <link rel="apple-touch-icon" href="{{ asset('assets/images/favicon.ico') }}">
+    <link rel="apple-touch-icon" href="{{ asset('images/favicon.ico') }}">
     <meta name="apple-mobile-web-app-title" content="Flatkit">
     <meta name="mobile-web-app-capable" content="yes">
-    <link rel="shortcut icon" sizes="196x196" href="{{ asset('assets/images/favicon.ico') }}">
-    <link rel="stylesheet" href="{{ asset('assets/font-awesome/font-awesome.min.css') }}" type="text/css">
-    <link rel="stylesheet" href="{{ asset('assets/css/app.min.css') }}">
+    <link rel="shortcut icon" sizes="196x196" href="{{ asset('images/favicon.ico') }}">
+
+    <!-- Fontawesome -->
+    <link rel="stylesheet" href="{{ asset('font-awesome/font-awesome.min.css') }}" type="text/css">
+
+    <!-- Jquery -->
+    <script src="{{ asset('jquery/jquery-3.5.1.min.js') }}"></script>
+
+    <!-- Bootstrap -->
+    <link rel="stylesheet" href="{{ asset('bootstrap/bootstrap.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('bootstrap/surcharge.css') }}">
+    <script src="{{ asset('bootstrap/bootstrap.min.js') }}"></script>
+
+
+    <!-- Theme -->
+    <link rel="stylesheet" href="{{ asset('theme/theme.min.css') }}">
+
+    <!-- Cropperjs -->
+    <link rel="stylesheet" href="{{ asset('cropperjs/cropper.css') }}">
+    <script src="{{ asset('cropperjs/cropper.js') }}"></script>
+
+
 </head>
 <body>
 <div class="app" id="app">
@@ -25,14 +44,19 @@
         {{ render(path('admin_navbar')) }}
         <div class="content-main" id="content-main">
             <div class="padding">
-            <!-- FLASHS -->
-            {% for message in app.flashes('success') %}
-                <div class="alert alert-success">
-                    {{ message }}
-                </div>
-            {% endfor %}
-            <!-- FLASHS -->
-            {% block body %}{% endblock %}
+                <!-- FLASHS -->
+                {% for message in app.flashes('success') %}
+                    <div class="alert alert-success">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+                {% for message in app.flashes('danger') %}
+                    <div class="alert alert-danger">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+                <!-- FLASHS -->
+                {% block body %}{% endblock %}
             </div>
         </div>
         <div class="footer-custom">
@@ -40,7 +64,6 @@
         </div>
     </div>
 </div>
-<script src="{{ asset('assets/js/app.min.js') }}"></script>
 {% block javascript %}
 {% endblock %}
 </body>

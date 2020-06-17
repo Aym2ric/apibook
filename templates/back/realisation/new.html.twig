@@ -62,27 +62,22 @@
                             </div>
                         </div>
                     </div>
-                </div>
-
-
-                <div class="row">
-                    <div class="col-6 col-lg-6">
-
-                        <div class="box p-4">
-                            <div class="row">
-                                <div class="col-12 col-lg-12">
-                                    <div class="form-group">
-                                        <label class="text-grey is-required">Image</label>
-                                        <div><img src="" width="300px" id="croppedImage"/></div>
-                                        <div class="text-danger">{{ form_errors(form.imageCropping) }}</div>
-                                        <input id="cropperUpload" type="file" name="photo" accept="image/*">
-                                    </div>
-                                </div>
+                    <div class="row">
+                        <div class="col-md-6 pr-1">
+                            <div class="form-group">
+                                <label class="text-grey is-required">Image</label>
+                                <div><img src="" width="300px" id="croppedImage"/></div>
+                                <input id="cropperUpload" type="file" name="photo" accept="image/*">
+                                {{ form_widget(form.imageCropping.base64) }}
+                                {{ form_widget(form.imageCropping.imageName) }}
                             </div>
-
                         </div>
                     </div>
+
+
                 </div>
+
+
                 <button class="btn btn-success-light">Sauvegarder</button>
                 {{ form_end(form) }}
 
@@ -95,12 +90,20 @@
     <div class="modal fade remove-modal" tabindex="-1" role="dialog" id="cropperModal">
         <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content text-center">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <div class="modal-positioner">
-                    <h1>Crop Photo</h1>
-                    <hr>
-                    <img style="width: 271px; height: 271px;" id="previewImage" src="">
-                    <button id="buttonSaveCropped" class="btn btn-primary">Save</button>
+                <div class="modal-header">
+                    <h5 class="modal-title" id="deleteModalLabel">Crop Photo</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div style="justify-content: center; display: flex;">
+                        <img style="width: 271px; height: 271px;" id="previewImage" src="">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button id="buttonCancelCropped" class="btn btn-danger" data-dismiss="modal">Annuler</button>
+                    <button id="buttonSaveCropped" class="btn btn-success text-white">Sauvegarder</button>
                 </div>
             </div>
         </div>
@@ -109,56 +112,59 @@
 {% endblock %}
 
 {% block javascript %}
-<script type="text/javascript">
-    let cropper;
-    let cropperModalId = '#cropperModal';
-    let $jsPhotoUploadInput = $('#cropperUpload');
+    <script type="text/javascript">
+        let cropper;
+        let cropperModalId = '#cropperModal';
+        let $jsPhotoUploadInput = $('#cropperUpload');
 
-    $jsPhotoUploadInput.on('change', function() {
-        var files = this.files;
-        if (files.length > 0) {
-            var photo = files[0];
+        $jsPhotoUploadInput.on('click', function () {
+            this.value = null;
+        });
 
-            var reader = new FileReader();
-            reader.onload = function(event) {
-                var image = $('#previewImage')[0];
-                image.src = event.target.result;
+        $jsPhotoUploadInput.on('change', function () {
+            var files = this.files;
+            if (files.length > 0) {
+                var photo = files[0];
+                var reader = new FileReader();
 
-                cropper = new Cropper(image, {
-                    viewMode: 1,
-                    aspectRatio: 1,
-                    minContainerWidth: 400,
-                    minContainerHeight: 400,
-                    minCropBoxWidth: 271,
-                    minCropBoxHeight: 271,
-                    movable: true,
-                    ready: function () {
-                        console.log('ready');
-                        console.log(cropper.ready);
+                reader.onload = function (event) {
+                    var image = $('#previewImage')[0];
+                    image.src = event.target.result;
+
+                    if (image.classList.contains("cropper-hidden")) {
+                        image.src = "";
+                        image.cropper.destroy();
                     }
-                });
 
-                $(cropperModalId).modal();
-            };
-            reader.readAsDataURL(photo);
-        }
-    });
+                    cropper = new Cropper(image, {
+                        viewMode: 1,
+                        aspectRatio: 1,
+                        minContainerWidth: 400,
+                        minContainerHeight: 400,
+                        minCropBoxWidth: 271,
+                        minCropBoxHeight: 271,
+                        movable: true
+                    });
 
-    $('#buttonSaveCropped').on('click', function(event) {
-        event.preventDefault();
+                    $(cropperModalId).modal();
 
-        console.log(cropper.ready);
+                    $('#buttonCancelCropped').on('click', function () {
+                        cropper.destroy();
+                    });
+                };
+                reader.readAsDataURL(photo);
+            }
+        });
 
-        var $button = $(this);
-        $button.text('Uploading...');
-        $button.prop('disabled', true);
-
-        const canvas = cropper.getCroppedCanvas();
-        const base64encodedImage = canvas.toDataURL();
-        console.log(base64encodedImage);
-        $('#croppedImage').attr('src', base64encodedImage);
-        $('#realisation_create_imageCropping_base64').val(base64encodedImage);
-        $(cropperModalId).modal('hide');
-    });
-</script>
+        $('#buttonSaveCropped').on('click', function (event) {
+            event.preventDefault();
+            const canvas = cropper.getCroppedCanvas();
+            const base64encodedImage = canvas.toDataURL();
+            console.log(base64encodedImage);
+            $('#croppedImage').attr('src', base64encodedImage);
+            $('#realisation_create_imageCropping_base64').val(base64encodedImage);
+            $(cropperModalId).modal('hide');
+            cropper.destroy();
+        });
+    </script>
 {% endblock %}

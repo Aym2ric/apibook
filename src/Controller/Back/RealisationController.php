@@ -6,6 +6,7 @@ use App\Entity\ImageCropping;
 use App\Entity\Realisation;
 use App\Filter\RealisationFilterType;
 use App\Form\RealisationCreateType;
+use App\Form\RealisationEditImageCroppingType;
 use App\Form\RealisationEditType;
 use App\Form\RealisationImageCroppingType;
 use App\Repository\RealisationRepository;
@@ -107,7 +108,7 @@ class RealisationController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
 
-            // On donne un nom à notre image et on upload l'image sur le serveur
+            // On donne un nom à notre nouvelle image et on upload l'image sur le serveur
             $filename = md5(time() . uniqid()) . ".jpg";
             $realisation->getImageCropping()->setImageName($filename);
             $decoded = base64_decode(str_replace("data:image/png;base64,", "", $realisation->getImageCropping()->getBase64()));
@@ -136,7 +137,7 @@ class RealisationController extends AbstractController
      * @param KernelInterface $kernel
      * @return Response
      */
-    public function edit(Request $request, Breadcrumbs $breadcrumbs, Realisation $realisation,  KernelInterface $kernel): Response
+    public function edit(Request $request, Breadcrumbs $breadcrumbs, Realisation $realisation,  KernelInterface $kernel, RealisationRepository $realisationRepository): Response
     {
         $breadcrumbs->addItem("Administration", $this->generateUrl('admin_index'));
         $breadcrumbs->addItem("Réalisations", $this->generateUrl('realisation_index'));
@@ -155,12 +156,18 @@ class RealisationController extends AbstractController
         }
 
         // CroppingImage
-        $formImageCropping = $this->createForm(RealisationImageCroppingType::class, $realisation);
+        $formImageCropping = $this->createForm(RealisationEditImageCroppingType::class, $realisation);
         $formImageCropping->handleRequest($request);
-
         if ($formImageCropping->isSubmitted() && $formImageCropping->isValid()) {
+            // On récupère l'ancien imageName puis on supprime l'ancienne image
+            $oldRealisation = $realisationRepository->findOneBy(['id' => $realisation->getId()]);
+            try {
+                unlink ($kernel->getProjectDir() . "/public/upload/" . $oldRealisation->getImageCropping()->getImageName());
+            } catch (\Exception $e) {
+                // si l'image n'existe pas on continue tout de meme
+            }
 
-            // On donne un nom à notre image et on upload l'image sur le serveur
+            // On donne un nom à notre nouvelle image et on upload l'image sur le serveur
             $filename = md5(time() . uniqid()) . ".jpg";
             $realisation->getImageCropping()->setImageName($filename);
             $decoded = base64_decode(str_replace("data:image/png;base64,", "", $realisation->getImageCropping()->getBase64()));

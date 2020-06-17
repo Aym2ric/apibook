@@ -19,7 +19,7 @@ use Symfony\Component\Routing\Annotation\Route;
 class SecurityController extends AbstractController
 {
     /**
-     * @Route("/password", name="app_password", methods={"GET","POST"})
+     * @Route("/admin/password", name="app_password", methods={"GET","POST"})
      * @param Request $request
      * @param EntityManagerInterface $entityManager
      * @param Breadcrumbs $breadcrumbs
@@ -52,7 +52,7 @@ class SecurityController extends AbstractController
                 // Ancien mot de passe incorrect
                 $form->get("oldpassword")->addError(new FormError("Ancien mot de passe incorrect."));
 
-                return $this->render('security/password.html.twig', [
+                return $this->render('back/security/password.html.twig', [
                     'form' => $form->createView(),
                 ]);
             }

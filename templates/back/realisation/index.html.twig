@@ -117,7 +117,7 @@
                 <tbody>
                 {% for realisation in pagination %}
                     <tr>
-                        <td><img style="width:100px;" src="{{ asset('upload/') }}{{ realisation.imageCropping.imageName }}"/></td>
+                        <td><img style="width:75px;" src="{{ asset('upload/') }}{{ realisation.imageCropping.imageName }}"/></td>
                         <td>{{ realisation.titre }}</td>
                         <td>{{ realisation.description }}</td>
                         <td>{{ realisation.url }}</td>
@@ -157,7 +157,7 @@
     </div>
     <!-- PAGINATOR BOT -->
 
-    <!-- Modal -->
+    <!-- MODAL DELETE -->
     <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel"
          aria-hidden="true">
         <div class="modal-dialog" role="document">
@@ -181,10 +181,12 @@
             </div>
         </div>
     </div>
+    <!-- MODAL DELETE -->
 {% endblock %}
 
 {% block javascript %}
     <script type="text/javascript">
+        /* JQUERY DELETE */
         let tab_realisations_id = [];
 
         $("#initButton").on("click", function () {
@@ -232,5 +234,6 @@
                 }
             });
         });
+        /* JQUERY DELETE */
     </script>
 {% endblock %}
