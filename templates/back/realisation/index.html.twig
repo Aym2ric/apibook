@@ -1,0 +1,236 @@
+{% extends 'back/base_admin.html.twig' %}
+
+{% block title %}Liste Utilisateurs{% endblock %}
+
+{% block body %}
+    <!-- BREADCRUMBS -->
+    <div class="row pb-4">
+        <div class="col-auto">
+            <i class="fa fa-star circular circular-success"></i>
+        </div>
+        <div class="col pt-3">
+            <h1 class="h1 bdc-title">Liste Réalisations</h1>
+            <span class="text-grey">Gestion des réalisations</span>
+        </div>
+        <div class="col text-right">
+            <a href="{{ path('realisation_new') }}" class="btn btn-success-light btn-md">
+                <i class="fa fa-plus"></i>
+                <span class="px-2 font-weight-normal">Créer</span></a>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12 col-lg-12">
+            {{ wo_render_breadcrumbs() }}
+        </div>
+    </div>
+    <!-- BREADCRUMBS -->
+
+    <!-- BOX FILTRES -->
+    <div class="row">
+        <div class="col-12 col-lg-12">
+            <div class="box">
+                <div id="accordion">
+                    <div class="card">
+                        <div class="card-header" id="headingOne">
+                            <h5 class="mb-0">
+                                <button class="btn {% if isForm %} collapsed {% endif %}" data-toggle="collapse"
+                                        data-target="#collapseOne"
+                                        aria-expanded="{% if isForm %} true {% else %} false {% endif %}"
+                                        aria-controls="collapseOne">
+                                    <i class="fa fa-sort-down align-text-top"></i> <span class="ml-2">Filtres</span>
+                                </button>
+                            </h5>
+                        </div>
+
+                        <div id="collapseOne" class="collapse {% if isForm %} show {% endif %}"
+                             aria-labelledby="headingOne" data-parent="#accordion">
+                            <div class="card-body">
+                                {{ form_start(form, {'attr': {'novalidate': 'novalidate'}, 'method': 'GET'}) }}
+
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label class="text-grey">Titre</label>
+                                            {{ form_widget(form.titre) }}
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label class="text-grey">Description</label>
+                                            {{ form_widget(form.description) }}
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label class="text-grey">Url</label>
+                                            {{ form_widget(form.url) }}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <a href="{{ app.request.pathinfo }}" class="btn btn-grey-light">Réinitialiser</a>
+                                <button type="submit" class="btn btn-success-light ml-2">Filtrer</button>
+                                {{ form_end(form) }}
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    <!-- BOX FILTRES -->
+
+    <!-- PAGINATOR TOP -->
+    <div class="row">
+        <div class="col-12 col-lg-12">
+            <div class="box">
+                <div class="navigation">
+                    {{ knp_pagination_render(pagination) }}
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- PAGINATOR TOP -->
+    <!-- TABLEAU LISTING OBJETS -->
+    <div class="row">
+        <div class="col-12 col-lg-12">
+            <table class="table table-bordered bg-white">
+                <thead>
+                <tr>
+                    <th>Image</th>
+                    <th>{{ knp_pagination_sortable(pagination, 'Titre', 'q.titre') }}</th>
+                    <th>{{ knp_pagination_sortable(pagination, 'Description', 'q.description') }}</th>
+                    <th>{{ knp_pagination_sortable(pagination, 'Url', 'q.url') }}</th>
+                    <th class="text-center">Actions</th>
+                    <th class="text-center">
+                        <button type="button" id="initButton" class="btn btn-danger btn-md" data-toggle="modal"
+                                data-target="#deleteModal">
+                            <i class="fa fa-trash"></i>
+                            <span class="font-weight-normal">Supprimer</span>
+                        </button>
+                    </th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for realisation in pagination %}
+                    <tr>
+                        <td><img style="width:100px;" src="{{ asset('upload/') }}{{ realisation.imageCropping.imageName }}"/></td>
+                        <td>{{ realisation.titre }}</td>
+                        <td>{{ realisation.description }}</td>
+                        <td>{{ realisation.url }}</td>
+                        <td class="text-center">
+                            <div class="btn-group" role="group" aria-label="Basic example">
+                                <a href="{{ path('realisation_edit', {'id': realisation.id}) }}" class="btn btn-grey btn-md"><i
+                                            class="fa fa-pencil"></i> <span
+                                            class="font-weight-normal">Modifier</span></a>
+                            </div>
+                        </td>
+                        <td class="text-center">
+                            <input type="checkbox" name="realisations-to-delete" data-value="{{ realisation.titre }}"
+                                   value="{{ realisation.id }}"/>
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="999">
+                            <div class="alert alert-danger">Aucun résultat trouvé</div>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <!-- TABLEAU LISTING OBJETS -->
+    <!-- PAGINATOR BOT -->
+    <div class="row">
+        <div class="col-12 col-lg-12">
+            <div class="box">
+                <div class="navigation">
+                    {{ knp_pagination_render(pagination) }}
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- PAGINATOR BOT -->
+
+    <!-- Modal -->
+    <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="deleteModalLabel">Suppression de réalisation(s)</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p>Êtes-vous sûr de vouloir supprimer les réalisation(s) suivante(s) ?</p>
+                    <ul id="ul-show-realisations"></ul>
+                    <div id="loader-css" class="text-center"></div>
+                    <div id="ajax-response" class="text-center"></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" data-dismiss="modal">Annuler</button>
+                    <button id="deleteButton" type="button" class="btn btn-success text-white">Supprimer</button>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascript %}
+    <script type="text/javascript">
+        let tab_realisations_id = [];
+
+        $("#initButton").on("click", function () {
+            tab_realisations_id = [];
+            let tab_realisations_name = [];
+            $("#ul-show-realisations").html("");
+            $("#loader-css").html("");
+            $("#ajax-response").html("");
+
+            $('input[name="realisations-to-delete"]:checkbox:checked').each(function () {
+                tab_realisations_id.push($(this).val());
+                tab_realisations_name.push($(this).attr("data-value"));
+            });
+
+            tab_realisations_name.forEach(function (name) {
+                $("#ul-show-realisations").append('<li>' + name + '</li>');
+            });
+
+        });
+
+        $("#deleteButton").on("click", function () {
+
+            $("#ajax-response").html("");
+
+            $.ajax({
+                url: "{{ path('realisation_delete_ajax') }}",
+                type: "POST",
+                dataType: "json",
+                data: {
+                    "tab_realisations_id": tab_realisations_id
+                },
+                async: true,
+                beforeSend: function () {
+                    $("#loader-css").append("<img src='{{ asset('images/loading.gif') }}'/>");
+                },
+                complete: function () {
+                    $("#loader-css").html("");
+                },
+                success: function (data) {
+                    $("#ajax-response").append("<img src='{{ asset('images/check-circle.gif') }}'/>");
+                    location.reload();
+                },
+                error: function () {
+                    $("#ajax-response").append("<div class='text-danger'>Une erreur est survenue.</div>");
+                }
+            });
+        });
+    </script>
+{% endblock %}
