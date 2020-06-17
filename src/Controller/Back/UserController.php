@@ -69,7 +69,7 @@ class UserController extends AbstractController
             }
 
             // Test Enabled
-            if(!empty($request->query->get("user_filter")["enabled"])) {
+            if(!empty($request->query->get("user_filter")["enabled"]) || $request->query->get("user_filter")["enabled"] == 0) {
                 $queryBuilder->andWhere('q.enabled = :enabled')
                     ->setParameter("enabled", $request->query->get("user_filter")["enabled"]);
             }
@@ -162,6 +162,7 @@ class UserController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+
             $this->getDoctrine()->getManager()->flush();
 
             $this->addFlash("success","Utilisateur modifié");
