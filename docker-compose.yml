@@ -4,7 +4,7 @@ services:
     build: .docker/apache
     container_name: ddev_apache
     ports:
-      - 80:80
+      - 443:443
     volumes:
       - .docker/config/vhosts:/etc/apache2/sites-enabled
       - .:/home/wwwroot/sf4
@@ -18,10 +18,10 @@ services:
     volumes:
       - .docker/data/db:/var/lib/mysql
     environment:
-      MYSQL_ROOT_PASSWORD: 65DZ4sdds4DZzdQ64D15D16Q
-      MYSQL_DATABASE: ddev6e546ez5
-      MYSQL_USER: ddev2za5zaze
-      MYSQL_PASSWORD: 0CE1Fe153z2e0z
+      MYSQL_ROOT_PASSWORD: sf4
+      MYSQL_DATABASE: sf4
+      MYSQL_USER: sf4
+      MYSQL_PASSWORD: sf4
 
   php:
     build: .docker/php
