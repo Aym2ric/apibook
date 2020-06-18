@@ -108,6 +108,7 @@ class RealisationController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
 
+
             // On donne un nom à notre nouvelle image et on upload l'image sur le serveur
             $filename = md5(time() . uniqid()) . ".jpg";
             $realisation->getImageCropping()->setImageName($filename);

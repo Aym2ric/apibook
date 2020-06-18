@@ -169,6 +169,10 @@
                 $('#buttonCancelCropped').on('click', function () {
                     cropper.destroy();
                 });
+
+                $('#cropperModal').on('hidden.bs.modal', function () {
+                    cropper.destroy();
+                });
             };
             reader.readAsDataURL(photo);
         }
