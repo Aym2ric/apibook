@@ -25,8 +25,8 @@ RUN apt-get install nano -y
 #RUN cd /usr/local/bin/
 #CMD certbot-auto certonly
 
-COPY config/sites-available/dufresne.dev.crt /etc/ssl/certs/dufresne.dev.crt
-COPY config/sites-available/GandiStandardSSLCA2.pem /etc/ssl/certs/GandiStandardSSLCA2.pem
+#COPY config/sites-available/dufresne.dev.crt /etc/ssl/certs/dufresne.dev.crt
+#COPY config/sites-available/GandiStandardSSLCA2.pem /etc/ssl/certs/GandiStandardSSLCA2.pem
 
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \

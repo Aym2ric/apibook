@@ -4,7 +4,7 @@ services:
     build: .docker/apache
     container_name: ddev_apache
     ports:
-      - 443:443
+      - 80:80
     volumes:
       - .docker/config/vhosts:/etc/apache2/sites-enabled
       - .:/home/wwwroot/sf4
