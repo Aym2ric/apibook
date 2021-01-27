@@ -5,5 +5,8 @@
 - Docker
 - Apache
 
+# Lancer le projet
+docker-compose up -d
+
 # Lien API
-http://localhost/api
+http://localhost:80/api
